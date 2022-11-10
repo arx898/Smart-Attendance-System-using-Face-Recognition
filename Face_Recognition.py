@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 
 import cv2
+from cv2 import flip
 import face_recognition as fr
 import numpy as np
 
@@ -46,7 +47,6 @@ def markAttend(name):
             f.writelines(f'\n{name},\t\t{Timestr},\t{dtstr}')
         # print(MyDataList)
 
-
 encodeListKnown = findEncodings(imgs)
 print('Encode Complete')  # print to encode completion msg
 
@@ -55,6 +55,8 @@ facecas = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 # capturing Video with webcam
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+	
+# flipVertical = cv2.flip(cap, 0)
 
 # video Resolution
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 864)
@@ -66,8 +68,9 @@ cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)
 # Reading webcam for realtime recognition
 while True:
     ret, img = cap.read()
+    img = cv2.flip(img, +1)
     ImgS = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = facecas.detectMultiScale(ImgS, scaleFactor=1.3, minNeighbors=5)
+    faces = facecas.detectMultiScale(ImgS, scaleFactor=1.05, minNeighbors=5)
     # success, img = cap.read()
     ImgS = cv2.resize(img, (0, 0), None, 0.25, 0.25)
     # ImgS = cv2.cvtColor(ImgS, cv2.COLOR_BGR2RGB)
@@ -96,8 +99,8 @@ while True:
             cv2.rectangle(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
             cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (0, 0, 255), cv2.FILLED)
 
-    cv2.imshow('Webcam', img)
-    if cv2.waitKey(1) & 0xFF == ord('c'):
+    cv2.imshow('Face Recognition & Attendance System', img)
+    if cv2.waitKey(1)==27:
         break
 
 cap.release()
